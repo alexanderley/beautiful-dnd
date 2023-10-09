@@ -42,14 +42,39 @@ function App() {
   const [count, setCount] = useState(0);
   const [stores, setStores] = useState(DATA);
 
+  const handleDragDrop = (results) => {
+    console.log("Hello there", results);
+
+    const { source, destination, type } = results;
+
+    if (!destination) return;
+
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
+
+    if (type === "group") {
+      const reorderedStores = [...stores];
+      const sourceIndex = source.index;
+      // index where the element should be place after dropping it
+      const destinationIndex = destination.index;
+
+      // remove element from the array
+      const [removedStore] = reorderedStores.splice(sourceIndex, 1);
+
+      // put the element back to the array to the new postion
+      reorderedStores.splice(destinationIndex, 0, removedStore);
+
+      return setStores(reorderedStores);
+    }
+  };
+
   return (
     <div className="layout__wrapper">
       <div className="card">
-        <DragDropContext
-          onDragEnd={() => {
-            console.log("drag drop event occured");
-          }}
-        >
+        <DragDropContext onDragEnd={handleDragDrop}>
           <div className="header">
             <h1>Shopping List</h1>
           </div>
