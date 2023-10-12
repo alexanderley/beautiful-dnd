@@ -43,7 +43,7 @@ function App() {
   const [stores, setStores] = useState(DATA);
 
   const handleDragDrop = (results) => {
-    console.log("Hello there", results);
+    console.log("Results: ", results);
 
     const { source, destination, type } = results;
 
@@ -55,6 +55,7 @@ function App() {
     )
       return;
 
+    // Functionality to move around stores
     if (type === "group") {
       const reorderedStores = [...stores];
       const sourceIndex = source.index;
@@ -69,6 +70,47 @@ function App() {
 
       return setStores(reorderedStores);
     }
+    // Functionality to move articles to different stores
+    console.log({ destination, source });
+
+    // Where its dragged from
+    const storeSourceIndex = stores.findIndex(
+      (store) => store.id === source.droppableId
+    );
+
+    // Where its going to be dropped
+    const storeDestinationIndex = stores.findIndex(
+      (store) => store.id === destination.droppableId
+    );
+
+    // Items of the new Destintation
+    const newSourceItems = [...stores[storeSourceIndex].items];
+    console.log("newSourceItems: ", newSourceItems);
+
+    // All items in the new location
+    const newDestinationItems =
+      source.droppableId !== destination.droppableId
+        ? [...stores[storeDestinationIndex].items]
+        : newSourceItems;
+
+    // remove the item from the old array
+    const [deletedItem] = newSourceItems.splice(source.index, 1);
+
+    // add new item to the destination array
+    newDestinationItems.splice(destination.index, 0, deletedItem);
+    const newStores = [...stores];
+
+    newStores[storeSourceIndex] = {
+      ...stores[storeSourceIndex],
+      items: newSourceItems,
+    };
+
+    newStores[storeDestinationIndex] = {
+      ...stores[storeDestinationIndex],
+      items: newSourceItems,
+    };
+
+    setStores(newStores);
   };
 
   return (
@@ -90,22 +132,54 @@ function App() {
                   >
                     {(provided) => (
                       <div
-                        className="store-container"
                         {...provided.dragHandleProps}
                         {...provided.draggableProps}
                         ref={provided.innerRef}
                       >
-                        <h3>{store.name}</h3>
+                        <StoreList {...store} />
                       </div>
                     )}
                   </Draggable>
                 ))}
+                {/* this will add a placeolder so the div keeps the size */}
+                {provided.placeholder}
               </div>
             )}
           </Droppable>
         </DragDropContext>
       </div>
     </div>
+  );
+}
+
+function StoreList({ name, items, id }) {
+  return (
+    <Droppable droppableId={id}>
+      {(provided) => (
+        <div {...provided.droppableProps} ref={provided.innerRef}>
+          <div className="store-container">
+            <h3>{name}</h3>
+          </div>
+          <div className="items-container">
+            {items.map((item, index) => (
+              <Draggable draggableId={item.id} index={index} key={item.id}>
+                {(provided) => (
+                  <div
+                    className="item-container"
+                    {...provided.dragHandleProps}
+                    {...provided.draggableProps}
+                    ref={provided.innerRef}
+                  >
+                    <h4>{item.name}</h4>
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        </div>
+      )}
+    </Droppable>
   );
 }
 
