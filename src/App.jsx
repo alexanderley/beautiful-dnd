@@ -55,7 +55,7 @@ function App() {
     )
       return;
 
-    // Functionality to move around stores
+    // 1. Functionality to move around stores
     if (type === "group") {
       const reorderedStores = [...stores];
       const sourceIndex = source.index;
@@ -70,7 +70,7 @@ function App() {
 
       return setStores(reorderedStores);
     }
-    // Functionality to move articles to different stores
+    // 2. Functionality to move articles to different stores
     console.log({ destination, source });
 
     // Where its dragged from
