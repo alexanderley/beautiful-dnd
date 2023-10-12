@@ -39,7 +39,6 @@ const DATA = [
 ];
 
 function App() {
-  const [count, setCount] = useState(0);
   const [stores, setStores] = useState(DATA);
 
   const handleDragDrop = (results) => {
@@ -105,9 +104,14 @@ function App() {
       items: newSourceItems,
     };
 
+    // newStores[storeDestinationIndex] = {
+    //   ...stores[storeDestinationIndex],
+    //   items: newSourceItems,
+    // };
+
     newStores[storeDestinationIndex] = {
       ...stores[storeDestinationIndex],
-      items: newSourceItems,
+      items: newDestinationItems,
     };
 
     setStores(newStores);
